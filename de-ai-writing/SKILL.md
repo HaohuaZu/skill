@@ -83,7 +83,25 @@ Delete or compress:
 
 If a paragraph sounds like it is trying to prove it is well-written, simplify it.
 
-### 5. Final Human Check
+### 5. Preserve Human Structure
+
+Strong Chinese long-form writing often feels human not because the words are fancy, but because the structure feels lived rather than assembled.
+
+When revising:
+- let one paragraph carry one main movement of thought
+- do not collapse a full emotional or logical turn into one dense block
+- if the narrator changes direction, add a bridge sentence explaining why
+- make past projects or past attempts do real work: each one should reveal a limit, not just provide credentials
+- alternate between concrete experience and interpretation instead of stacking abstractions
+- keep some breathing room after dense technical or judgment-heavy paragraphs
+
+For experience-sharing posts, a useful rhythm is:
+- what I did before
+- what each experience taught me could not work
+- why that pushed me to change direction
+- what I did next
+
+### 6. Final Human Check
 
 Before delivering, silently test:
 - Does this sound like something the person would actually say out loud?
@@ -118,6 +136,9 @@ The job here is not just “remove AI flavor.” The job is to make the piece fe
 - favor medium-length paragraphs over sentence fragments
 - let the opening hook a reader, not just introduce a topic
 - make the final section feel earned; avoid generic uplift
+- keep paragraph breaks generous enough for mobile reading; do not merge everything into giant walls
+- preserve explicit bridge paragraphs when the narrator changes career direction, product direction, or point of view
+- if a “personal IP / trust” section exists, explain the trust-building mechanism, not just the slogan
 
 ### Default structure for public-account mode
 
@@ -130,6 +151,19 @@ If the user did not provide a required template, prefer this progression:
 6. closing reflection: what this means now
 
 Do not force this structure if the user has already provided a better one.
+
+### Experience-Sharing Post Mode
+
+For Chinese experience-sharing posts, especially those about创业、接单、职业转向、技术商业化:
+
+- let the opening create pressure before explanation
+- use earlier projects as evidence, but make each one end with a revealed limitation
+- add a direct transition when the narrator changes track: “because of those experiences, I moved from X to Y”
+- say practical motives plainly when they matter, such as周期、现金流、验证速度、回款速度
+- treat “personal IP” as a trust system: what the narrator publishes, how often, what a new reader learns, why that changes buying confidence
+- keep the strongest “I realized…” moments, especially first encounters with doubt, mismatch, or changed judgment
+
+This mode should feel like a person looking back and connecting the dots, not like a model arranging lessons into a clean deck.
 
 ## Output Style
 
