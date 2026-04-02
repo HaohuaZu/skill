@@ -38,6 +38,7 @@
 
 ### 🏢 企业与沟通
 - **brand-guidelines** - 品牌指南管理
+- **de-ai-writing** - 去 AI 味儿写作与改稿
 - **doc-coauthoring** - 文档协作
 - **internal-comms** - 内部沟通
 - **slack-gif-creator** - Slack GIF 创建器
