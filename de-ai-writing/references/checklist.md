@@ -21,6 +21,14 @@ Use this checklist right before delivering a rewrite.
 - Short sentences are rare and intentional.
 - Each paragraph moves the thought forward.
 
+## Public Account Check
+
+- Would someone keep reading after the first screen on mobile?
+- Does the title sound like a person making a claim, not a machine optimizing a topic?
+- Do the subheads help the reader move, instead of sounding like a workshop outline?
+- Is there a visible emotional turn somewhere in the middle?
+- Does the ending land on a felt conclusion instead of “therefore, the lesson is…”?
+
 ## Compression Moves
 
 When the draft is too long or too AI-ish:
@@ -29,3 +37,4 @@ When the draft is too long or too AI-ish:
 - merge sentence fragments into one natural line
 - cut “teaching voice” if the piece should be storytelling
 - cut “summary voice” if the piece already proved the point
+- cut “公众号正确废话” like empty uplift, safe takeaways, and generic inspiration

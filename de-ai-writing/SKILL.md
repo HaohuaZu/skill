@@ -1,6 +1,6 @@
 ---
 name: de-ai-writing
-description: Use when the user wants writing to feel less AI-generated, more human, more lived-in, or more like something a real person would actually say. Trigger for Chinese long-form articles, blog rewrites,公众号文案, personal essays, narrative posts, or any request mentioning 去AI味、像真人写、有人味、别太机器、别太模板化.
+description: Use when the user wants writing to feel less AI-generated, more human, more lived-in, or more like something a real person would actually say. Trigger for Chinese long-form articles, blog rewrites,公众号文案, personal essays, narrative posts, or any request mentioning 去AI味、像真人写、有人味、别太机器、别太模板化、公众号成稿.
 ---
 
 # De-AI Writing
@@ -20,6 +20,8 @@ Use this skill when the user asks for any of the following:
 - “像人在讲，不像在总结”
 
 Also use it when the draft shows obvious generated-writing symptoms even if the user does not name them directly.
+
+For public-account articles, use this skill both to remove AI flavor and to finish the piece into something that reads like a publishable Chinese公众号 draft.
 
 ## Core Rule
 
@@ -91,6 +93,43 @@ Before delivering, silently test:
 - If a reader removed all headings, would the prose still feel human?
 
 If not, rewrite again.
+
+## Public Account Finishing Mode
+
+Use this mode when the target output is a Chinese public-account article, newsletter-style long post, or founder/personal-brand article meant to be read top-to-bottom.
+
+The job here is not just “remove AI flavor.” The job is to make the piece feel publishable.
+
+### What good public-account finishing looks like
+
+- the title is direct and human, not SEO sludge and not empty clickbait
+- the opening establishes tension within the first 2-4 paragraphs
+- the rhythm is readable on mobile, with paragraphs that breathe
+- subheads help orientation but do not read like a consulting deck
+- the piece has escalation: context -> friction -> turn -> method -> reflection
+- the ending lands emotionally instead of fading into generic encouragement
+
+### Rewrite rules for public-account mode
+
+- compress over-explained logic into cleaner narrative flow
+- keep headings, but make them sound spoken rather than “frameworked”
+- remove “summary after every paragraph” habits
+- keep useful repetition only when it builds emotional or rhetorical force
+- favor medium-length paragraphs over sentence fragments
+- let the opening hook a reader, not just introduce a topic
+- make the final section feel earned; avoid generic uplift
+
+### Default structure for public-account mode
+
+If the user did not provide a required template, prefer this progression:
+1. title with a concrete claim or tension
+2. opening with discomfort, contradiction, or surprise
+3. identity/context section: who I am and why this mattered
+4. turning point: what changed in how I saw the problem
+5. main body: what happened and what I learned
+6. closing reflection: what this means now
+
+Do not force this structure if the user has already provided a better one.
 
 ## Output Style
 
