@@ -24,11 +24,16 @@ class ContentRecord:
     comment_count: int
     raw_content: str
     collect_date: str
+    monitor_type: str = "keyword"
+    creator_name: str = ""
+    match_author: str = ""
     extra: dict[str, Any] = field(default_factory=dict)
 
     @property
     def record_key(self) -> str:
-        return _stable_hash([self.platform, self.keyword, self.url or self.title, self.publish_time])
+        if self.url:
+            return _stable_hash([self.platform, self.url])
+        return _stable_hash([self.platform, self.title, self.author, self.publish_time])
 
 
 @dataclass(frozen=True)
@@ -64,4 +69,3 @@ class PipelineResult:
     analysis_count: int
     records: list[ContentRecord] = field(default_factory=list)
     analyses: list[TopicInsightRecord] = field(default_factory=list)
-

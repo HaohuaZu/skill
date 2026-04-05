@@ -29,6 +29,17 @@ CONTENT_FIELD_SPECS = [
     {"type": "number", "name": "like_count", "style": {"type": "plain", "precision": 0}},
     {"type": "number", "name": "comment_count", "style": {"type": "plain", "precision": 0}},
     {"type": "text", "name": "raw_content"},
+    {
+        "type": "select",
+        "name": "monitor_type",
+        "multiple": False,
+        "options": [
+            {"name": "keyword", "hue": "Blue", "lightness": "Lighter"},
+            {"name": "creator_watch", "hue": "Orange", "lightness": "Lighter"},
+        ],
+    },
+    {"type": "text", "name": "creator_name"},
+    {"type": "text", "name": "match_author"},
     {"type": "datetime", "name": "collect_date", "style": {"format": "yyyy-MM-dd"}},
 ]
 
@@ -291,6 +302,8 @@ class LarkBaseWriter:
             return True
         if spec["name"] == "platform":
             return existing.get("type") != "select"
+        if spec["name"] == "monitor_type":
+            return existing.get("type") != "select"
         if spec["name"] == "collect_date":
             return existing.get("type") != "datetime"
         return False
@@ -354,6 +367,9 @@ class LarkBaseWriter:
             "like_count": record.like_count,
             "comment_count": record.comment_count,
             "raw_content": record.raw_content,
+            "monitor_type": record.monitor_type,
+            "creator_name": record.creator_name,
+            "match_author": record.match_author,
             "collect_date": record.collect_date,
         }
 

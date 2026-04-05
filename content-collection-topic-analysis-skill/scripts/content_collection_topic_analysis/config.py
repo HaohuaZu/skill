@@ -28,6 +28,7 @@ class SkillConfig:
     wechat_cover_image: str | None
     cn8n_api_url: str | None
     cn8n_api_key: str | None
+    creator_watchlist_path: str | None
     openai_base_url: str | None
     openai_api_key: str | None
     openai_model: str | None
@@ -54,6 +55,7 @@ class SkillConfig:
             wechat_cover_image=os.getenv("WECHAT_COVER_IMAGE"),
             cn8n_api_url=os.getenv("CN8N_API_URL"),
             cn8n_api_key=os.getenv("CN8N_API_KEY"),
+            creator_watchlist_path=os.getenv("CREATOR_WATCHLIST_PATH"),
             openai_base_url=os.getenv("OPENAI_BASE_URL"),
             openai_api_key=os.getenv("OPENAI_API_KEY"),
             openai_model=os.getenv("OPENAI_MODEL"),

@@ -5,6 +5,7 @@ import subprocess
 import sys
 from dataclasses import replace
 from pathlib import Path
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -29,6 +30,20 @@ class CliTests(unittest.TestCase):
         self.assertIn("--top-n", result.stdout)
         self.assertIn("--with-analysis", result.stdout)
         self.assertIn("--dry-run", result.stdout)
+
+    def test_help_lists_creator_watch_flags(self) -> None:
+        result = subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "run_creator_watch.py"), "--help"],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("--watchlist", result.stdout)
+        self.assertIn("--days", result.stdout)
+        self.assertIn("--top-n", result.stdout)
+        self.assertIn("--collect-date", result.stdout)
 
 
 class PipelineCoreTests(unittest.TestCase):
@@ -119,6 +134,9 @@ class PipelineCoreTests(unittest.TestCase):
 
         self.assertEqual(content_spec_by_name["platform"]["type"], "select")
         self.assertEqual(content_spec_by_name["collect_date"]["type"], "datetime")
+        self.assertEqual(content_spec_by_name["monitor_type"]["type"], "select")
+        self.assertEqual(content_spec_by_name["creator_name"]["type"], "text")
+        self.assertEqual(content_spec_by_name["match_author"]["type"], "text")
         self.assertEqual(analysis_spec_by_name["platform"]["type"], "select")
         self.assertEqual(analysis_spec_by_name["collect_date"]["type"], "datetime")
 
@@ -145,6 +163,30 @@ class PipelineCoreTests(unittest.TestCase):
         records = deduplicate_records([first, duplicate])
         self.assertEqual(len(records), 1)
         self.assertEqual(records[0].like_count, 10)
+
+    def test_deduplicate_records_ignores_keyword_when_url_matches(self) -> None:
+        from content_collection_topic_analysis.models import ContentRecord
+        from content_collection_topic_analysis.pipeline import deduplicate_records
+
+        first = ContentRecord(
+            platform="wechat_mp",
+            keyword="A",
+            title="同一篇文章",
+            summary="",
+            author="数字生命卡兹克",
+            publish_time="2026-04-05T09:00:00+08:00",
+            url="https://example.com/1",
+            read_count=0,
+            like_count=10,
+            comment_count=1,
+            raw_content="",
+            collect_date="2026-04-05",
+        )
+        duplicate = replace(first, keyword="B", like_count=999)
+
+        records = deduplicate_records([first, duplicate])
+        self.assertEqual(len(records), 1)
+        self.assertEqual(records[0].keyword, "A")
 
     def test_parse_topic_analysis_response(self) -> None:
         from content_collection_topic_analysis.analyzer import parse_analysis_response
@@ -305,6 +347,20 @@ class PipelineCoreTests(unittest.TestCase):
         self.assertEqual(config.content_table_id, "tbl_content")
         self.assertEqual(config.analysis_table_id, "tbl_analysis")
 
+    def test_skill_config_reads_creator_watchlist_override(self) -> None:
+        from content_collection_topic_analysis.config import SkillConfig
+
+        with patch.dict(
+            "os.environ",
+            {
+                "CREATOR_WATCHLIST_PATH": "/tmp/watch.json",
+            },
+            clear=False,
+        ):
+            config = SkillConfig.from_env()
+
+        self.assertEqual(config.creator_watchlist_path, "/tmp/watch.json")
+
     def test_find_existing_record_id_by_record_key(self) -> None:
         from content_collection_topic_analysis.lark_base import LarkBaseWriter
 
@@ -332,6 +388,135 @@ class PipelineCoreTests(unittest.TestCase):
             record_id = writer._find_existing_record_id("base_xxx", "tbl_content", "rk_2")
 
         self.assertEqual(record_id, "rec_2")
+
+    def test_content_payload_includes_creator_watch_fields(self) -> None:
+        from content_collection_topic_analysis.lark_base import LarkBaseWriter
+        from content_collection_topic_analysis.models import ContentRecord
+
+        payload = LarkBaseWriter._content_payload(
+            ContentRecord(
+                platform="wechat_mp",
+                keyword="数字生命卡兹克",
+                title="示例",
+                summary="摘要",
+                author="数字生命卡兹克",
+                publish_time="2026-04-05T09:00:00",
+                url="https://example.com/a",
+                read_count=1,
+                like_count=2,
+                comment_count=3,
+                raw_content="正文",
+                collect_date="2026-04-05",
+                monitor_type="creator_watch",
+                creator_name="数字生命卡兹克",
+                match_author="数字生命卡兹克",
+            )
+        )
+
+        self.assertEqual(payload["monitor_type"], "creator_watch")
+        self.assertEqual(payload["creator_name"], "数字生命卡兹克")
+        self.assertEqual(payload["match_author"], "数字生命卡兹克")
+
+    def test_load_creator_watchlist_reads_exact_creators(self) -> None:
+        from content_collection_topic_analysis.creator_watch import load_creator_watchlist
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "watch.json"
+            path.write_text(
+                json.dumps(
+                    {
+                        "platform": "wechat_mp",
+                        "match_mode": "exact",
+                        "creators": ["饼干哥哥 AGI", "数字生命卡兹克", "TATALAB"],
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            watch = load_creator_watchlist(str(path))
+
+        self.assertEqual(watch.platform, "wechat_mp")
+        self.assertEqual(watch.match_mode, "exact")
+        self.assertEqual(watch.creators, ["饼干哥哥 AGI", "数字生命卡兹克", "TATALAB"])
+
+    def test_filter_records_by_exact_author(self) -> None:
+        from content_collection_topic_analysis.adapters.wechat_mp import filter_records_by_exact_author
+        from content_collection_topic_analysis.models import ContentRecord
+
+        base = ContentRecord(
+            platform="wechat_mp",
+            keyword="数字生命卡兹克",
+            title="示例",
+            summary="",
+            author="数字生命卡兹克",
+            publish_time="2026-04-05T09:00:00",
+            url="https://example.com/1",
+            read_count=1,
+            like_count=2,
+            comment_count=3,
+            raw_content="",
+            collect_date="2026-04-05",
+        )
+        records = [
+            base,
+            replace(base, author="数字生命卡兹克 Pro", url="https://example.com/2"),
+        ]
+
+        filtered = filter_records_by_exact_author(records, "数字生命卡兹克")
+
+        self.assertEqual([item.author for item in filtered], ["数字生命卡兹克"])
+
+    def test_creator_watch_runner_collects_multiple_creators(self) -> None:
+        from content_collection_topic_analysis.creator_watch import CreatorWatchConfig, run_creator_watch
+        from content_collection_topic_analysis.models import ContentRecord
+
+        class FakeAdapter:
+            def collect(self, keyword: str, days: int, top_n: int, sort_by: str, collect_date: str) -> list[ContentRecord]:
+                return [
+                    ContentRecord(
+                        platform="wechat_mp",
+                        keyword=keyword,
+                        title=f"{keyword} 的新文章",
+                        summary="摘要",
+                        author=keyword,
+                        publish_time="2026-04-05T09:00:00",
+                        url=f"https://example.com/{keyword}",
+                        read_count=1,
+                        like_count=2,
+                        comment_count=3,
+                        raw_content="",
+                        collect_date=collect_date,
+                    )
+                ]
+
+        class FakeWriter:
+            def __init__(self) -> None:
+                self.content_records: list[ContentRecord] = []
+
+            def write_content_records(self, records: list[ContentRecord]) -> None:
+                self.content_records.extend(records)
+
+        watch = CreatorWatchConfig(
+            platform="wechat_mp",
+            match_mode="exact",
+            creators=["饼干哥哥 AGI", "TATALAB"],
+        )
+        writer = FakeWriter()
+
+        records = run_creator_watch(
+            watch=watch,
+            adapter=FakeAdapter(),
+            writer=writer,
+            days=1,
+            top_n=10,
+            collect_date="2026-04-05",
+        )
+
+        self.assertEqual(len(records), 2)
+        self.assertEqual(len(writer.content_records), 2)
+        self.assertTrue(all(record.monitor_type == "creator_watch" for record in records))
+        self.assertEqual([record.creator_name for record in records], ["饼干哥哥 AGI", "TATALAB"])
 
 
 if __name__ == "__main__":

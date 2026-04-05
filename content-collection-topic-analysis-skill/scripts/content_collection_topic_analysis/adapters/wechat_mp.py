@@ -89,6 +89,10 @@ def build_cn8n_payload(keyword: str, days: int, page: int) -> dict[str, Any]:
     }
 
 
+def filter_records_by_exact_author(records: list[ContentRecord], author_name: str) -> list[ContentRecord]:
+    return [record for record in records if record.author == author_name]
+
+
 def calculate_fetch_pages(top_n: int, page_size: int, max_pages: int) -> int:
     if top_n <= 0:
         return 1
