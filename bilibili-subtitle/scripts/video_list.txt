@@ -1,0 +1,6 @@
+# B站视频BV号列表
+# 每行一个BV号，以 # 开头的行为注释
+# 示例：
+# BV1Hwi4BYEJz
+# BV1QbruBUExb
+# BV1bqi9BWE7M
